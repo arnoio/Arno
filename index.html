@@ -1,0 +1,1473 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07090C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ArnØ">
+<meta name="description" content="ArnØ | آرنو — طراحی خالص، بازاریابی ممتاز. استودیو طراحی وب، برندینگ و تولید محتوای دیجیتال.">
+<title>ArnØ | آرنو — Pure Design, Premium Marketing</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307090C'/%3E%3Cpath d='M32 7 54 19.5v25L32 57 10 44.5v-25Z' fill='%2310151C' stroke='%2339FF14' stroke-width='2.5'/%3E%3Cpath d='M20 44 32 18 44 44h-6.5l-5.5-12.5L26.5 44H20Z' fill='%2339FF14'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+ --bg:#07090C;--bg-2:#0D1117;--bg-3:#121821;
+ --surface:rgba(16,21,28,.82);--surface-strong:rgba(20,27,36,.95);
+ --ink:#F2F5F9;--muted:#93A0B2;--silver:#C8D1DC;
+ --line:rgba(200,209,220,.12);--line-strong:rgba(200,209,220,.26);
+ --neon:#39FF14;--neon-2:#6BFF4A;--neon-dim:#1E9E08;
+ --neon-soft:rgba(57,255,20,.10);--neon-glow:rgba(57,255,20,.28);
+ --danger:#FF5E6C;--warn:#FFB020;
+ --nav:74px;--radius:22px;--container:1200px
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{
+ scroll-behavior:smooth;background:var(--bg);color-scheme:dark;
+ -webkit-text-size-adjust:100%;font-size:16px
+}
+body{
+ margin:0;min-height:100dvh;
+ background:
+  radial-gradient(ellipse 65% 45% at 88% 4%,rgba(57,255,20,.11),transparent 60%),
+  radial-gradient(ellipse 55% 40% at 10% 92%,rgba(57,255,20,.05),transparent 55%),
+  radial-gradient(circle at 50% 0%,#0E141C 0%,var(--bg) 72%);
+ color:var(--ink);font-family:'Vazirmatn',system-ui,-apple-system,sans-serif;
+ line-height:1.75;overflow-x:hidden;-webkit-tap-highlight-color:transparent
+}
+/* Subtle cyber grid texture */
+body::before{
+ content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+ background-image:
+  linear-gradient(rgba(200,209,220,.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(200,209,220,.025) 1px,transparent 1px);
+ background-size:44px 44px;
+ mask-image:radial-gradient(circle at 50% 25%,black 25%,transparent 85%);
+ -webkit-mask-image:radial-gradient(circle at 50% 25%,black 25%,transparent 85%)
+}
+
+button,input,textarea,select{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+button:disabled{opacity:.5;cursor:not-allowed}
+#app{min-height:100dvh;display:flex;flex-direction:column}
+
+/* Brand Wordmark */
+.arno-wordmark{
+ font-weight:900;letter-spacing:-.5px;direction:ltr;display:inline-flex;align-items:center;gap:1px;
+ background:linear-gradient(135deg,#FFFFFF 0%,#D4DCE6 48%,#8692A2 72%,#F8FAFC 100%);
+ -webkit-background-clip:text;background-clip:text;color:transparent
+}
+.arno-wordmark .slash-o{
+ color:var(--neon);-webkit-text-fill-color:var(--neon);
+ filter:drop-shadow(0 0 10px rgba(57,255,20,.75))
+}
+
+/* Topbar */
+.topbar{
+ position:sticky;top:0;z-index:35;
+ background:rgba(7,9,12,.84);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+ border-bottom:1px solid var(--line)
+}
+.topbar-inner{
+ width:min(var(--container),calc(100% - clamp(20px,4vw,48px)));
+ min-height:68px;margin:auto;
+ display:flex;align-items:center;justify-content:space-between;gap:12px
+}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);min-width:0;flex-shrink:1}
+.brand-mark{width:40px;height:40px;flex:none;filter:drop-shadow(0 0 12px rgba(57,255,20,.35));transition:transform .25s}
+.brand:hover .brand-mark{transform:scale(1.05)}
+.brand-text{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.top-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sync-badge{
+ display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;
+ padding:5px 11px;border-radius:999px;
+ background:rgba(255,255,255,.035);border:1px solid var(--line);color:var(--silver);white-space:nowrap
+}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--neon);box-shadow:0 0 9px var(--neon);flex:none}
+.sync-badge.offline .sync-dot{background:var(--warn);box-shadow:0 0 9px var(--warn)}
+
+/* Desktop Nav */
+.desktop-nav{display:none;align-items:center;gap:4px}
+.desktop-nav button{
+ background:transparent;border:1px solid transparent;color:var(--silver);
+ padding:8px 14px;border-radius:12px;cursor:pointer;font-size:13.5px;font-weight:600;
+ transition:all .2s ease;white-space:nowrap
+}
+.desktop-nav button:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+.desktop-nav button[aria-current=page]{
+ color:var(--neon);background:var(--neon-soft);border-color:rgba(57,255,20,.32);
+ box-shadow:inset 0 0 14px rgba(57,255,20,.08)
+}
+
+/* Buttons */
+.icon-btn,.nav-btn,.button{
+ min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:14px;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 16px;
+ cursor:pointer;text-decoration:none;font-weight:600;font-size:14px;
+ transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,color .18s ease
+}
+.icon-btn{width:44px;padding:0;flex:none}
+.icon-btn svg,.nav-btn svg,.button svg{width:18px;height:18px;flex:none}
+.button:hover:not(:disabled),.icon-btn:hover:not(:disabled){
+ border-color:rgba(57,255,20,.65);transform:translateY(-1px);box-shadow:0 8px 24px rgba(57,255,20,.12)
+}
+.button:active:not(:disabled),.icon-btn:active:not(:disabled){transform:translateY(0)}
+.button.primary{
+ background:linear-gradient(135deg,var(--neon) 0%,#4CE82C 100%);
+ border-color:var(--neon);color:#040A03;font-weight:800;
+ box-shadow:0 4px 24px rgba(57,255,20,.26)
+}
+.button.primary:hover:not(:disabled){
+ box-shadow:0 8px 30px rgba(57,255,20,.4);filter:brightness(1.05)
+}
+.button.install-btn{
+ border-color:rgba(57,255,20,.42);background:rgba(57,255,20,.09);color:var(--neon);font-weight:700
+}
+.button.soft{background:rgba(255,255,255,.035);border-color:var(--line-strong);color:var(--ink)}
+.button.soft:hover:not(:disabled){background:var(--neon-soft);border-color:rgba(57,255,20,.45)}
+.button.danger{color:#FF9AA4;border-color:rgba(255,94,108,.35);background:rgba(255,94,108,.08)}
+.button.danger:hover:not(:disabled){border-color:var(--danger);background:rgba(255,94,108,.15);box-shadow:0 6px 18px rgba(255,94,108,.16)}
+.button.small{min-height:38px;padding:6px 13px;font-size:13px;border-radius:11px}
+
+/* Layout & Typography */
+main#main{flex:1;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 24px)}
+.page{
+ width:min(var(--container),calc(100% - clamp(20px,4vw,48px)));
+ margin:0 auto;padding:clamp(20px,3.5vw,36px) 0 36px;
+ animation:pageIn .32s cubic-bezier(.22,1,.36,1) both
+}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.kicker{
+ display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;
+ color:var(--neon);background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.24);
+ padding:4px 12px;border-radius:999px
+}
+.kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon)}
+h1,h2,h3,p{margin-top:0}
+.page-heading{margin:4px 0 26px}
+.page-heading h1{font-size:clamp(24px,4.8vw,42px);line-height:1.25;margin:12px 0 10px;font-weight:900;letter-spacing:-.01em}
+.page-heading p{max-width:680px;color:var(--muted);margin:0;font-size:clamp(14px,1.6vw,16px)}
+
+.panel{
+ background:linear-gradient(165deg,rgba(18,24,33,.88),rgba(12,16,22,.92));
+ backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ border:1px solid var(--line);border-radius:var(--radius);
+ padding:clamp(18px,3vw,26px);box-shadow:0 18px 46px rgba(0,0,0,.4)
+}
+
+/* Auth Gate */
+.auth-gate{
+ min-height:calc(100dvh - 76px);display:grid;place-items:center;
+ padding:clamp(18px,4vw,36px) 16px
+}
+.auth-gate-card{
+ width:min(460px,100%);
+ background:linear-gradient(165deg,rgba(17,22,30,.96),rgba(10,13,18,.98));
+ backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+ border:1px solid var(--line-strong);border-radius:28px;
+ padding:clamp(22px,4vw,34px);
+ box-shadow:0 28px 80px rgba(0,0,0,.7),0 0 48px rgba(57,255,20,.07);
+ position:relative;overflow:hidden
+}
+.auth-gate-card::before{
+ content:"";position:absolute;top:0;left:15%;right:15%;height:2px;
+ background:linear-gradient(90deg,transparent,var(--neon),transparent)
+}
+.gate-logo{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:22px}
+.gate-logo svg{width:70px;height:70px;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(57,255,20,.42))}
+.gate-logo .arno-wordmark{font-size:32px}
+.gate-logo p{color:var(--muted);font-size:12.5px;margin:4px 0 0;letter-spacing:.08em;text-transform:uppercase;direction:ltr}
+.gate-footer-switch{
+ margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ font-size:13px;color:var(--muted);flex-wrap:wrap
+}
+
+/* Forms */
+.field-label{display:block;font-size:13px;font-weight:700;color:var(--silver);margin:14px 0 6px}
+input[type=text],input[type=email],input[type=password],textarea{
+ width:100%;min-height:46px;background:rgba(7,10,14,.88);border:1px solid var(--line-strong);
+ border-radius:13px;padding:10px 14px;color:var(--ink);
+ transition:border-color .2s,box-shadow .2s,background .2s
+}
+input::placeholder,textarea::placeholder{color:#667487}
+input:focus,textarea:focus{
+ border-color:var(--neon);background:rgba(9,13,18,.98);
+ box-shadow:0 0 0 3px rgba(57,255,20,.14);outline:none
+}
+textarea{min-height:108px;resize:vertical;line-height:1.7}
+.form-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.field-note{color:var(--muted);font-size:12.5px}
+.status{min-height:22px;margin:12px 0 0;font-size:13px;font-weight:600;color:var(--neon)}
+.status.error{color:#FF7E8A}
+.status.success{color:var(--neon)}
+
+/* Hero & Showcase */
+.hero-shell{
+ position:relative;overflow:hidden;border-radius:30px;border:1px solid var(--line-strong);
+ background:linear-gradient(145deg,rgba(17,23,31,.95),rgba(9,12,16,.98));
+ padding:clamp(22px,4.5vw,46px);margin-bottom:28px;
+ box-shadow:0 30px 90px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)
+}
+.hero-shell::after{
+ content:"";position:absolute;top:-120px;left:-120px;width:320px;height:320px;
+ background:radial-gradient(circle,rgba(57,255,20,.12),transparent 70%);pointer-events:none
+}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(220px,.8fr);gap:30px;align-items:center}
+.hero-title{font-size:clamp(28px,5.4vw,54px);line-height:1.18;font-weight:900;margin:14px 0 16px;letter-spacing:-.015em}
+.hero-title em{font-style:normal;color:var(--neon);text-shadow:0 0 26px rgba(57,255,20,.36)}
+.hero-desc{color:var(--silver);font-size:clamp(14.5px,1.7vw,17px);max-width:580px;margin-bottom:6px}
+.hero-metrics{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
+ margin-top:24px;padding-top:20px;border-top:1px solid var(--line)
+}
+.metric-pill{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.metric-pill b{display:block;color:var(--neon);font-size:15px;font-weight:900}
+.metric-pill span{font-size:11.5px;color:var(--muted)}
+
+.hero-visual{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hero-emblem{width:min(100%,275px);animation:floatEmblem 6s ease-in-out infinite}
+@keyframes floatEmblem{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero-emblem svg{width:100%;height:auto;filter:drop-shadow(0 0 28px rgba(57,255,20,.32))}
+.hero-slogan{margin-top:12px;font-size:11.5px;letter-spacing:.16em;color:var(--silver);text-transform:uppercase;direction:ltr;text-align:center}
+
+.step-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:28px 0}
+.step-card{
+ background:linear-gradient(165deg,rgba(18,24,33,.86),rgba(11,15,21,.92));
+ border:1px solid var(--line);border-radius:22px;padding:22px;
+ display:flex;flex-direction:column;gap:12px;transition:transform .2s,border-color .2s
+}
+.step-card:hover{transform:translateY(-3px);border-color:rgba(57,255,20,.38)}
+.step-num{
+ width:38px;height:38px;border-radius:12px;background:var(--neon-soft);
+ border:1px solid rgba(57,255,20,.42);color:var(--neon);
+ display:grid;place-items:center;font-weight:900;font-size:14px
+}
+.step-card h3{font-size:17.5px;margin:0;font-weight:800}
+.step-card p{font-size:13.5px;color:var(--muted);margin:0}
+
+/* Services */
+.tier-badge{
+ display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;
+ font-size:11px;font-weight:800;background:var(--neon-soft);color:var(--neon);
+ border:1px solid rgba(57,255,20,.35);margin-bottom:9px
+}
+.service-grid{display:grid;gap:16px}
+.service-card{
+ display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:20px;align-items:center;
+ padding:20px;border:1px solid var(--line);border-radius:24px;
+ background:linear-gradient(160deg,rgba(18,24,33,.88),rgba(11,15,21,.94));
+ transition:border-color .2s,box-shadow .2s,transform .2s
+}
+.service-card:hover{border-color:var(--line-strong)}
+.service-card.selected{
+ border-color:var(--neon);
+ box-shadow:0 0 0 1px var(--neon),0 16px 40px rgba(57,255,20,.15);
+ background:linear-gradient(160deg,rgba(20,31,24,.9),rgba(11,15,21,.96))
+}
+.service-thumb{width:150px;height:108px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#0A0E13}
+.service-thumb svg{width:100%;height:100%;display:block}
+.service-card h2{font-size:19.5px;margin:0 0 6px;font-weight:800}
+.service-card p{color:var(--muted);font-size:14px;margin:0}
+
+/* Before/After Interactive Stage */
+.ba-box{
+ margin-top:22px;padding:20px;border-radius:24px;
+ border:1px solid var(--line-strong);background:var(--surface)
+}
+.ba-stage{
+ position:relative;height:220px;border-radius:18px;overflow:hidden;
+ border:1px solid var(--line-strong);user-select:none;touch-action:none;
+ background:#0A0E13;cursor:ew-resize;direction:ltr
+}
+.ba-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.ba-after{clip-path:inset(0 0 0 50%)}
+.ba-divider{
+ position:absolute;top:0;bottom:0;left:50%;width:2px;
+ background:var(--neon);box-shadow:0 0 16px var(--neon);pointer-events:none
+}
+.ba-handle{
+ position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+ width:40px;height:40px;border-radius:50%;background:#07090C;
+ border:2px solid var(--neon);color:var(--neon);display:grid;place-items:center;
+ font-size:14px;font-weight:900;box-shadow:0 0 20px rgba(57,255,20,.45);pointer-events:none
+}
+.ba-range{width:100%;margin-top:12px;accent-color:var(--neon);cursor:pointer}
+
+.order-panel{
+ margin-top:22px;padding:clamp(20px,3.2vw,28px);border-radius:26px;
+ background:linear-gradient(155deg,rgba(20,28,36,.95),rgba(11,15,20,.98));
+ border:1px solid rgba(57,255,20,.34);box-shadow:0 20px 50px rgba(0,0,0,.45)
+}
+
+/* Contact */
+.ticket-hero{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;
+ padding:24px;border-radius:24px;
+ background:linear-gradient(135deg,rgba(57,255,20,.13),rgba(15,20,27,.95));
+ border:1px solid rgba(57,255,20,.42)
+}
+.contact-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.contact-item{
+ width:100%;text-align:start;min-height:82px;padding:16px 18px;
+ border:1px solid var(--line);border-radius:18px;background:var(--surface);
+ cursor:pointer;transition:all .2s ease
+}
+.contact-item:hover{border-color:var(--neon);transform:translateY(-2px);box-shadow:0 10px 26px rgba(57,255,20,.1)}
+.contact-item b{display:block;font-size:14px;color:var(--ink);margin-bottom:4px}
+.contact-item span{display:block;color:var(--neon);font-size:13.5px;font-weight:600;direction:ltr;text-align:right;overflow-wrap:anywhere}
+
+/* Profile & Records */
+.profile-layout{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:18px;align-items:start}
+.account-head{display:flex;align-items:center;gap:15px;margin-bottom:18px}
+.avatar{
+ width:76px;height:76px;border-radius:22px;background:var(--neon-soft);
+ border:1px solid rgba(57,255,20,.45);color:var(--neon);
+ display:grid;place-items:center;overflow:hidden;flex:none;font-size:26px;font-weight:900
+}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.profile-orders{display:grid;gap:12px;margin-top:12px}
+.record{
+ padding:16px;border:1px solid var(--line);border-radius:18px;
+ background:rgba(10,14,19,.82);transition:border-color .2s
+}
+.record:hover{border-color:var(--line-strong)}
+.record h3{font-size:15.5px;margin:0 0 6px;color:var(--ink)}
+.record p{font-size:13.5px;color:var(--silver);margin:0 0 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.record small{display:block;color:var(--muted);font-size:12px}
+.record-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.badge-pill{
+ display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:6px
+}
+.badge-pill.open{background:rgba(255,176,32,.14);color:#FFC966;border:1px solid rgba(255,176,32,.35)}
+.badge-pill.answered{background:rgba(57,255,20,.14);color:var(--neon);border:1px solid rgba(57,255,20,.35)}
+
+/* Admin Panel */
+.admin-shell{
+ border:1px solid rgba(57,255,20,.38);border-radius:28px;
+ padding:clamp(18px,3vw,28px);
+ background:linear-gradient(165deg,rgba(16,22,29,.97),rgba(8,11,15,.99));
+ box-shadow:0 24px 70px rgba(0,0,0,.65)
+}
+.admin-header{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line)
+}
+.admin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+.stat-box{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:15px}
+.stat-box b{display:block;font-size:24px;color:var(--neon);font-weight:900}
+.stat-box span{font-size:12px;color:var(--muted)}
+.admin-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.admin-tabs .button.active{background:var(--neon);border-color:var(--neon);color:#040A03;font-weight:800}
+
+/* FAQ */
+.faq-list{display:grid;gap:12px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:0 18px}
+details[open]{border-color:rgba(57,255,20,.35)}
+summary{cursor:pointer;padding:16px 0;font-weight:700;list-style:none}
+summary::-webkit-details-marker{display:none}
+details p{color:var(--muted);margin:0 0 16px;font-size:14px}
+
+/* Bottom Nav & Drawer */
+.bottom-nav{
+ position:fixed;z-index:32;inset:auto 0 0;
+ background:rgba(7,9,12,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+ border-top:1px solid var(--line);
+ padding:6px 10px calc(6px + env(safe-area-inset-bottom));
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;min-height:var(--nav)
+}
+.nav-btn{
+ border:0;background:transparent;min-width:0;min-height:54px;padding:4px;
+ display:flex;flex-direction:column;gap:3px;color:var(--muted);font-size:11px;border-radius:14px
+}
+.nav-btn[aria-current=page]{color:var(--neon);background:var(--neon-soft);font-weight:800}
+
+.drawer{
+ position:fixed;z-index:50;inset:0 0 0 auto;width:min(340px,86vw);height:100dvh;overflow-y:auto;
+ background:rgba(11,15,20,.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+ border-inline-start:1px solid var(--line-strong);
+ padding:22px 20px calc(24px + env(safe-area-inset-bottom))
+}
+.menu-shade{position:fixed;z-index:45;inset:0;background:rgba(3,5,7,.78);backdrop-filter:blur(4px)}
+
+.toast{
+ position:fixed;z-index:60;inset:auto 50% calc(var(--nav) + 16px) auto;transform:translateX(50%);
+ max-width:calc(100vw - 28px);background:#111820;color:var(--ink);
+ border:1px solid var(--neon);border-radius:14px;padding:11px 18px;
+ box-shadow:0 12px 34px rgba(0,0,0,.6);font-size:13px;font-weight:600;
+ opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;text-align:center
+}
+.toast.show{opacity:1;transform:translate(50%,-4px)}
+.site-foot{padding:22px 16px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:24px}
+
+/* Responsive Breakpoints */
+@media(min-width:960px){
+ .desktop-nav{display:flex}
+ .bottom-nav{display:none!important}
+ main#main{padding-bottom:28px}
+ .toast{inset:auto 50% 26px auto}
+}
+@media(max-width:860px){
+ .hero-grid,.profile-layout,.step-cards{grid-template-columns:minmax(0,1fr)}
+ .hero-visual{order:-1}
+ .hero-emblem{width:min(100%,210px)}
+ .service-card{grid-template-columns:minmax(0,1fr)}
+ .service-thumb{width:100%;height:140px}
+ .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:640px){
+ .contact-list,.ticket-hero{grid-template-columns:minmax(0,1fr)}
+ .hero-metrics{grid-template-columns:minmax(0,1fr)}
+ .brand-sub,.install-label{display:none}
+ .topbar-inner{min-height:62px;gap:8px}
+ .sync-badge{padding:4px 9px;font-size:10.5px}
+ .ba-stage{height:185px}
+ .form-actions .button{width:100%}
+ .record-actions .button,.admin-header .button,.admin-tabs .button,.gate-footer-switch .button{width:auto}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+ <div class="topbar-inner">
+  <a class="brand" href="#home" data-action="go-home" aria-label="ArnØ صفحه آغاز">
+   <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+    <path d="M32 5 55 18v28L32 59 9 46V18Z" fill="#10151C" stroke="#39FF14" stroke-width="2.5"/>
+    <path d="M19 45 32 17 45 45h-6.5l-6.5-14-6.5 14H19Z" fill="#39FF14"/>
+   </svg>
+   <span class="brand-text">
+    <span class="arno-wordmark" style="font-size:21px">Arn<span class="slash-o">Ø</span></span>
+    <span class="brand-sub">Pure Design · Premium Marketing</span>
+   </span>
+  </a>
+
+  <nav class="desktop-nav" id="desktopNav" aria-label="ناوبری دسکتاپ">
+   <button type="button" data-action="navigate" data-page-target="home">آغاز</button>
+   <button type="button" data-action="navigate" data-page-target="services">خدمات و سفارش</button>
+   <button type="button" data-action="navigate" data-page-target="contact">ارتباط و تیکت</button>
+   <button type="button" data-action="navigate" data-page-target="reviews">دیدگاه‌ها</button>
+   <button type="button" data-action="navigate" data-page-target="profile">پروفایل</button>
+  </nav>
+
+  <div class="top-actions">
+   <span class="sync-badge" id="syncBadge" title="وضعیت اتصال دیتابیس">
+    <span class="sync-dot"></span><span id="syncText">آماده</span>
+   </span>
+   <button class="button install-btn small" type="button" data-action="install-app" title="نصب اپلیکیشن">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 20h14"/></svg>
+    <span class="install-label">نصب اپ</span>
+   </button>
+   <button class="icon-btn" type="button" data-action="menu" aria-label="منوی اصلی">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+   </button>
+  </div>
+ </div>
+</header>
+
+<main id="main">
+ <!-- AUTH GATE -->
+ <section class="auth-gate" id="authGatePage" data-page="auth" hidden>
+  <div class="auth-gate-card">
+   <div class="gate-logo">
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+     <polygon points="60,8 106,34 106,86 60,112 14,86 14,34" fill="#10151C" stroke="#39FF14" stroke-width="2.5"/>
+     <path d="M36 82 60 32 84 82H72.5L60 55 47.5 82H36Z" fill="#39FF14"/>
+     <circle cx="60" cy="67" r="4.5" fill="#F2F5F9"/>
+    </svg>
+    <div class="arno-wordmark">Arn<span class="slash-o">Ø</span></div>
+    <p>Pure Design, Premium Marketing</p>
+   </div>
+
+   <form id="gateLoginForm" novalidate>
+    <h1 style="font-size:21px;margin:0 0 4px;font-weight:800">ورود به فضای آرنو</h1>
+    <p class="field-note" style="margin:0 0 12px">با نام کاربری یا ایمیل و رمز عبور خود وارد شوید.</p>
+    <label class="field-label" for="gateLoginUser">نام کاربری یا ایمیل</label>
+    <input id="gateLoginUser" type="text" maxlength="120" autocomplete="username" placeholder="نام کاربری یا ایمیل" required>
+    <label class="field-label" for="gateLoginPass">رمز عبور</label>
+    <input id="gateLoginPass" type="password" maxlength="120" autocomplete="current-password" placeholder="••••••••" required>
+    <div class="form-actions">
+     <button class="button primary" type="submit" id="loginSubmitBtn" style="width:100%">ورود به اپلیکیشن</button>
+    </div>
+    <div class="gate-footer-switch">
+     <span>هنوز حساب کاربری ندارید؟</span>
+     <button class="button soft small" type="button" data-action="gate-mode" data-mode="register">ثبت‌نام سریع</button>
+    </div>
+   </form>
+
+   <form id="gateRegisterForm" hidden novalidate>
+    <h1 style="font-size:21px;margin:0 0 4px;font-weight:800">ایجاد حساب کاربری</h1>
+    <p class="field-note" style="margin:0 0 12px">اطلاعات زیر را برای ساخت پروفایل اختصاصی تکمیل کنید.</p>
+    <label class="field-label" for="gateRegName">نام و نام خانوادگی</label>
+    <input id="gateRegName" type="text" maxlength="60" autocomplete="name" placeholder="نام نمایشی" required>
+    <label class="field-label" for="gateRegUser">نام کاربری</label>
+    <input id="gateRegUser" type="text" maxlength="32" autocomplete="username" placeholder="حداقل ۳ نویسه انگلیسی" required>
+    <label class="field-label" for="gateRegEmail">ایمیل</label>
+    <input id="gateRegEmail" type="email" maxlength="120" autocomplete="email" placeholder="name@example.com" required>
+    <label class="field-label" for="gateRegPass">رمز عبور</label>
+    <input id="gateRegPass" type="password" maxlength="120" autocomplete="new-password" placeholder="حداقل ۶ نویسه" required>
+    <label class="field-label" for="gateRegPhone">شماره تماس (اختیاری)</label>
+    <input id="gateRegPhone" type="text" maxlength="30" inputmode="tel" autocomplete="tel" placeholder="09...">
+    <div class="form-actions">
+     <button class="button primary" type="submit" id="regSubmitBtn" style="width:100%">ثبت‌نام و ورود</button>
+    </div>
+    <div class="gate-footer-switch">
+     <span>قبلاً ثبت‌نام کرده‌اید؟</span>
+     <button class="button soft small" type="button" data-action="gate-mode" data-mode="login">بازگشت به ورود</button>
+    </div>
+   </form>
+
+   <p class="status" id="gateStatus" aria-live="polite"></p>
+  </div>
+ </section>
+
+ <!-- HOME PAGE -->
+ <section class="page" id="homePage" data-page="home" hidden>
+  <div class="hero-shell">
+   <div class="hero-grid">
+    <div>
+     <div class="kicker" id="heroKickerText">استودیو خلاقیت و مهندسی برند</div>
+     <h1 class="hero-title">طراحی <em>خالص</em>،<br>بازاریابی ممتاز.</h1>
+     <p class="hero-desc" id="heroCopy">از طراحی تجربه‌های دیجیتال تا بازاریابی هوشمند؛ همراهی دقیق برای برندهایی که می‌خواهند متفاوت دیده شوند و با اطمینان رشد کنند.</p>
+     <div class="form-actions">
+      <button class="button primary" type="button" data-action="go-services">مشاهده خدمات و سفارش</button>
+      <button class="button soft" type="button" data-action="go-contact">ارتباط و ثبت تیکت</button>
+      <button class="button install-btn" type="button" data-action="install-app">نصب اپلیکیشن</button>
+     </div>
+     <div class="hero-metrics">
+      <div class="metric-pill"><b>۱۰٪ سریع‌تر</b><span>معماری سبک و بهینه</span></div>
+      <div class="metric-pill"><b>همگام‌سازی ابری</b><span>پشتیبانی و پیگیری زنده</span></div>
+      <div class="metric-pill"><b>هویت اختصاصی</b><span>طراحی سفارشی بدون قالب</span></div>
+     </div>
+    </div>
+    <div class="hero-visual">
+     <div class="hero-emblem">
+      <svg viewBox="0 0 360 360" role="img" aria-label="لوگوی آرنو">
+       <defs>
+        <linearGradient id="hexGrad" x1="0" y1="0" x2="1" y2="1">
+         <stop offset="0%" stop-color="#18222E"/>
+         <stop offset="100%" stop-color="#090D12"/>
+        </linearGradient>
+       </defs>
+       <circle cx="180" cy="180" r="154" fill="none" stroke="rgba(200,209,220,.16)" stroke-width="1.2"/>
+       <circle cx="180" cy="180" r="128" fill="none" stroke="rgba(57,255,20,.34)" stroke-dasharray="4 10" stroke-width="1.4"/>
+       <polygon points="180,26 312,102 312,258 180,334 48,258 48,102" fill="url(#hexGrad)" stroke="#39FF14" stroke-width="2.5"/>
+       <path d="M98 248 180 86 262 248H216L180 175 144 248H98Z" fill="#39FF14"/>
+       <polygon points="180,192 206,248 154,248" fill="#07090C"/>
+      </svg>
+     </div>
+     <div class="hero-slogan">Pure Design · Premium Marketing</div>
+    </div>
+   </div>
+  </div>
+
+  <div class="step-cards">
+   <article class="step-card">
+    <div class="step-num">۰۱</div>
+    <h3>شناخت و راهبرد</h3>
+    <p>تحلیل دقیق بازار، مخاطب هدف و تدوین نقشه راه اختصاصی برای جایگاه‌سازی متمایز برند شما.</p>
+   </article>
+   <article class="step-card">
+    <div class="step-num">۰۲</div>
+    <h3>طراحی و مهندسی</h3>
+    <p>پیاده‌سازی رابط‌های کاربری لوکس، سریع، امن و کاملاً واکنش‌گرا برای موبایل، تبلت و دسکتاپ.</p>
+   </article>
+   <article class="step-card">
+    <div class="step-num">۰۳</div>
+    <h3>تحویل و رشد</h3>
+    <p>بهینه‌سازی مداوم، کمپین‌های بازاریابی داده‌محور و پشتیبانی مستقیم برای رشد پایدار کسب‌وکار.</p>
+   </article>
+  </div>
+ </section>
+
+ <!-- SERVICES PAGE -->
+ <section class="page" data-page="services" hidden>
+  <div class="page-heading">
+   <div class="kicker">خدمات تخصصی آرنو</div>
+   <h1>انتخاب و سفارش خدمات</h1>
+   <p id="servicesIntro">خدمت‌های مورد نیازتان را انتخاب کنید و در فرم پایین سفارش خود را ثبت نمایید.</p>
+  </div>
+
+  <div class="service-grid">
+   <article class="service-card" data-service-card="طراحی سایت و توسعه وب">
+    <div class="service-thumb">
+     <svg viewBox="0 0 180 130"><rect width="180" height="130" fill="#090D12"/><rect x="16" y="18" width="148" height="94" rx="10" fill="#131B24" stroke="#39FF14" stroke-width="1.5"/><rect x="28" y="32" width="60" height="10" rx="4" fill="#39FF14"/><rect x="28" y="50" width="110" height="6" rx="3" fill="rgba(200,209,220,.3)"/><rect x="28" y="64" width="85" height="6" rx="3" fill="rgba(200,209,220,.2)"/></svg>
+    </div>
+    <div>
+     <span class="tier-badge">ستون اصلی · رده ممتاز</span>
+     <h2>طراحی سایت و توسعه وب</h2>
+     <p id="serviceSiteText">وب‌سایت‌های سریع، امن و واکنش‌گرا با تمرکز بر هویت برند، تجربه کاربری و تبدیل بهتر بازدیدکننده به مشتری.</p>
+    </div>
+    <button class="button soft selection" type="button" data-action="select-service" data-service="طراحی سایت و توسعه وب" aria-pressed="false">انتخاب خدمت</button>
+   </article>
+
+   <article class="service-card" data-service-card="مدیریت بازاریابی">
+    <div class="service-thumb">
+     <svg viewBox="0 0 180 130"><rect width="180" height="130" fill="#090D12"/><path d="M24 98 L62 66 L96 80 L146 32" fill="none" stroke="#39FF14" stroke-width="4" stroke-linecap="round"/><circle cx="146" cy="32" r="5" fill="#39FF14"/></svg>
+    </div>
+    <div>
+     <span class="tier-badge">ستون اصلی · رشد و برندینگ</span>
+     <h2>مدیریت بازاریابی</h2>
+     <p id="serviceMarketingText">راهبردی روشن برای ارتباط مؤثر با مخاطب، محتوای منسجم و رشد قابل‌اندازه‌گیری برند در بازار رقابتی.</p>
+    </div>
+    <button class="button soft selection" type="button" data-action="select-service" data-service="مدیریت بازاریابی" aria-pressed="false">انتخاب خدمت</button>
+   </article>
+
+   <article class="service-card" data-service-card="ویرایش عکس و ویدئو">
+    <div class="service-thumb">
+     <svg viewBox="0 0 180 130"><rect width="180" height="130" fill="#090D12"/><rect x="34" y="26" width="112" height="78" rx="12" fill="#131B24" stroke="rgba(57,255,20,.45)"/><polygon points="80,46 116,65 80,84" fill="#39FF14"/></svg>
+    </div>
+    <div>
+     <span class="tier-badge">دسته مستقل · مدیا و تدوین</span>
+     <h2>ویرایش عکس و ویدئو</h2>
+     <p id="serviceMediaText">پرداخت حرفه‌ای تصویر و تدوین ویدئو برای محتوایی هماهنگ با هویت بصری و استانداردهای انتشار.</p>
+    </div>
+    <button class="button soft selection" type="button" data-action="select-service" data-service="ویرایش عکس و ویدئو" aria-pressed="false">انتخاب خدمت</button>
+   </article>
+  </div>
+
+  <div class="ba-box">
+   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <h3 style="margin:0;font-size:16px">مقایسه کیفیت قبل و بعد از پرداخت بصری</h3>
+    <span class="field-note">اسلایدر را بکشید</span>
+   </div>
+   <div class="ba-stage" id="baStage">
+    <div class="ba-layer">
+     <svg viewBox="0 0 800 260" preserveAspectRatio="none" style="width:100%;height:100%">
+      <rect width="800" height="260" fill="#181D24"/>
+      <circle cx="240" cy="130" r="76" fill="#2E3642"/>
+      <text x="36" y="42" fill="#93A0B2" font-family="Vazirmatn" font-size="18">نسخه خام (Before)</text>
+     </svg>
+    </div>
+    <div class="ba-layer ba-after" id="baAfterLayer">
+     <svg viewBox="0 0 800 260" preserveAspectRatio="none" style="width:100%;height:100%">
+      <rect width="800" height="260" fill="#09130C"/>
+      <circle cx="240" cy="130" r="76" fill="rgba(57,255,20,.16)" stroke="#39FF14" stroke-width="3"/>
+      <text x="540" y="42" fill="#39FF14" font-family="Vazirmatn" font-size="18" font-weight="bold">خروجی آرنو (After)</text>
+     </svg>
+    </div>
+    <div class="ba-divider" id="baDivider"></div>
+    <div class="ba-handle" id="baHandle">⇄</div>
+   </div>
+   <input class="ba-range" id="baRange" type="range" min="5" max="95" value="50" aria-label="اسلایدر مقایسه">
+  </div>
+
+  <form class="order-panel" id="orderForm" novalidate>
+   <h2>ثبت سفارش پکیج</h2>
+   <p class="field-note" id="selectedServices">هنوز خدمتی انتخاب نشده است.</p>
+   <label class="field-label" for="orderTitle">موضوع درخواست</label>
+   <input id="orderTitle" type="text" maxlength="120" placeholder="مثلاً طراحی وب‌سایت + مدیریت کمپین">
+   <label class="field-label" for="orderBody">توضیحات و نیاز پروژه</label>
+   <textarea id="orderBody" maxlength="3500" placeholder="اهداف، زمان‌بندی یا جزئیات پروژه را بنویسید…"></textarea>
+   <div class="form-actions">
+    <button class="button primary" type="submit" id="orderSubmitBtn">ثبت نهایی سفارش</button>
+   </div>
+   <p class="status" id="orderStatus" aria-live="polite"></p>
+  </form>
+ </section>
+
+ <!-- CONTACT PAGE -->
+ <section class="page" data-page="contact" hidden>
+  <div class="page-heading">
+   <div class="kicker">ارتباط مستقیم با تیم آرنو</div>
+   <h1>گفت‌وگو و ارسال تیکت</h1>
+   <p id="contactIntro">درخواست خود را به‌صورت تیکت مستقیم ثبت کنید یا از راه‌های ارتباطی زیر استفاده نمایید.</p>
+  </div>
+
+  <div class="ticket-hero">
+   <div>
+    <h2 style="margin:0 0 6px">نیاز به پیگیری یا مشاوره دارید؟</h2>
+    <p style="margin:0;color:var(--silver)">تیکت شما مستقیماً در پنل مدیریت ثبت می‌شود و پاسخ آن در پروفایل شما نمایش داده خواهد شد.</p>
+   </div>
+   <button class="button primary" type="button" data-action="ticket-contact">ارسال تیکت</button>
+  </div>
+
+  <section class="panel" id="contactTicketForm" hidden style="margin-top:18px">
+   <h2>ثبت تیکت پشتیبانی</h2>
+   <form id="contactTicket" novalidate>
+    <label class="field-label" for="contactTicketTitle">موضوع</label>
+    <input id="contactTicketTitle" type="text" maxlength="120" placeholder="موضوع پیام">
+    <label class="field-label" for="contactTicketBody">شرح درخواست</label>
+    <textarea id="contactTicketBody" maxlength="3500" placeholder="متن پیام یا درخواست خود را بنویسید…"></textarea>
+    <div class="form-actions">
+     <button class="button primary" type="submit" id="ticketSubmitBtn">ارسال به مدیریت</button>
+     <button class="button soft" type="button" data-action="cancel-ticket">انصراف</button>
+    </div>
+    <p class="status" id="contactTicketStatus" aria-live="polite"></p>
+   </form>
+  </section>
+
+  <div class="contact-list" id="contactList">
+   <button class="contact-item" type="button" data-action="dial" data-value="09308893989"><b>شماره تماس مدیرعامل</b><span>09308893989</span></button>
+   <button class="contact-item" type="button" data-action="whatsapp" data-value="09308893989"><b>شماره واتساپ</b><span>09308893989</span></button>
+   <button class="contact-item" type="button" data-action="dial" data-value="09028595255"><b>شماره پشتیبانی آرنو</b><span>09028595255</span></button>
+   <button class="contact-item" type="button" data-action="email" data-value="Arenbehrouzifar@gmail.com"><b>ایمیل مدیرعامل</b><span>Arenbehrouzifar@gmail.com</span></button>
+   <button class="contact-item" type="button" data-action="email" data-value="Arno.io@hotmail.com"><b>ایمیل پشتیبانی</b><span>Arno.io@hotmail.com</span></button>
+   <button class="contact-item" type="button" data-action="email" data-value="devteam.arno@gmail.com"><b>ایمیل تیم توسعه آرنو</b><span>devteam.arno@gmail.com</span></button>
+  </div>
+  <p class="status" id="contactStatus" aria-live="polite"></p>
+ </section>
+
+ <!-- PROFILE PAGE -->
+ <section class="page" data-page="profile" hidden>
+  <div class="page-heading">
+   <div class="kicker">پنل کاربری شخصی</div>
+   <h1>پروفایل و درخواست‌های من</h1>
+  </div>
+
+  <div class="profile-layout">
+   <section class="panel">
+    <div class="account-head">
+     <div class="avatar"><span id="avatarLetter">آ</span><img id="avatarImage" alt="عکس پروفایل" hidden></div>
+     <div><b id="profileName" style="font-size:17px">مهمان</b><p id="profileSummary" class="field-note" style="margin:2px 0 0">وارد شوید.</p></div>
+    </div>
+
+    <div id="signedInArea" hidden>
+     <form id="profileEditForm" novalidate>
+      <label class="field-label" for="editName">نام نمایشی</label>
+      <input id="editName" type="text" maxlength="60">
+      <label class="field-label" for="editEmail">ایمیل</label>
+      <input id="editEmail" type="email" maxlength="120">
+      <label class="field-label" for="editPhone">شماره تماس</label>
+      <input id="editPhone" type="text" maxlength="30" inputmode="tel">
+      <input id="avatarFileInput" type="file" accept="image/*" hidden>
+      <div class="form-actions">
+       <button class="button primary small" type="submit">ذخیره تغییرات</button>
+       <button class="button soft small" type="button" data-action="avatar">عکس آواتار</button>
+       <button class="button soft small" type="button" data-action="logout">خروج</button>
+       <button class="button danger small" type="button" data-action="delete-account">حذف حساب</button>
+      </div>
+     </form>
+    </div>
+    <p class="status" id="authStatus" aria-live="polite"></p>
+   </section>
+
+   <div style="display:grid;gap:16px">
+    <section class="panel">
+     <h2>درخواست‌ها و تیکت‌های من</h2>
+     <div class="profile-orders" id="myTickets"></div>
+    </section>
+
+    <section class="panel">
+     <h2>ثبت دیدگاه</h2>
+     <form id="reviewForm" novalidate>
+      <label class="field-label" for="reviewText">متن دیدگاه</label>
+      <textarea id="reviewText" maxlength="1200" placeholder="تجربه و نظر خود را درباره خدمات آرنو بنویسید…"></textarea>
+      <div class="form-actions"><button class="button soft small" type="submit">ارسال برای بررسی</button></div>
+     </form>
+     <p class="status" id="reviewStatus" aria-live="polite"></p>
+    </section>
+   </div>
+  </div>
+ </section>
+
+ <!-- ADMIN PANEL -->
+ <section class="page" id="adminPage" data-page="admin" hidden>
+  <div class="admin-shell">
+   <div class="admin-header">
+    <div>
+     <div class="kicker">مدیریت یکپارچه ArnØ</div>
+     <h1 style="margin:8px 0 4px;font-size:25px">پنل اختصاصی مدیریت</h1>
+     <p class="field-note" style="margin:0">مدیریت امن کاربران، پاسخ به تیکت‌ها، تأیید دیدگاه‌ها و ویرایش متون سایت.</p>
+    </div>
+    <div class="form-actions" style="margin:0">
+     <button class="button soft small" type="button" data-action="refresh-admin">به‌روزرسانی</button>
+     <button class="button danger small" type="button" data-action="admin-logout">خروج مدیر</button>
+    </div>
+   </div>
+
+   <div class="admin-stats">
+    <div class="stat-box"><b id="statTickets">۰</b><span>کل تیکت‌ها و سفارش‌ها</span></div>
+    <div class="stat-box"><b id="statOpen">۰</b><span>در انتظار پاسخ</span></div>
+    <div class="stat-box"><b id="statReviews">۰</b><span>دیدگاه در انتظار تأیید</span></div>
+    <div class="stat-box"><b id="statProfiles">۰</b><span>کاربران ثبت‌شده</span></div>
+   </div>
+
+   <div class="admin-tabs">
+    <button class="button soft small active" type="button" data-action="admin-tab" data-tab="tickets">تیکت‌ها و سفارش‌ها</button>
+    <button class="button soft small" type="button" data-action="admin-tab" data-tab="users">کاربران ثبت‌نام‌شده</button>
+    <button class="button soft small" type="button" data-action="admin-tab" data-tab="reviews">مدیریت دیدگاه‌ها</button>
+    <button class="button soft small" type="button" data-action="admin-tab" data-tab="content">ویرایش متون</button>
+   </div>
+
+   <div data-admin-panel="tickets"><div class="profile-orders" id="adminTickets"></div></div>
+   <div data-admin-panel="users" hidden><div class="profile-orders" id="adminProfiles"></div></div>
+   <div data-admin-panel="reviews" hidden><div class="profile-orders" id="adminReviews"></div></div>
+   <div data-admin-panel="content" hidden>
+    <form id="contentForm" novalidate>
+     <label class="field-label" for="editHeroCopy">توضیح صفحه آغاز</label>
+     <textarea id="editHeroCopy" maxlength="600"></textarea>
+     <label class="field-label" for="editServicesIntro">معرفی صفحه خدمات</label>
+     <textarea id="editServicesIntro" maxlength="600"></textarea>
+     <label class="field-label" for="editContactIntro">معرفی صفحه ارتباط با ما</label>
+     <textarea id="editContactIntro" maxlength="600"></textarea>
+     <div class="form-actions"><button class="button primary" type="submit">ذخیره تغییرات</button></div>
+    </form>
+   </div>
+   <p class="status" id="adminStatus" aria-live="polite"></p>
+  </div>
+ </section>
+
+ <!-- REVIEWS & FAQ -->
+ <section class="page" data-page="reviews" hidden>
+  <div class="page-heading"><div class="kicker">بازخورد مشتریان</div><h1>دیدگاه کاربران</h1></div>
+  <div class="profile-orders" id="approvedReviews"></div>
+ </section>
+
+ <section class="page" data-page="faq" hidden>
+  <div class="page-heading"><div class="kicker">راهنما</div><h1>پرسش‌های رایج</h1></div>
+  <div class="faq-list">
+   <details open><summary>چطور اپلیکیشن را نصب کنم؟</summary><p>روی دکمه «نصب اپ» در نوار بالا بزنید تا آیکون ArnØ به صفحه اصلی گوشی یا دسکتاپ شما اضافه شود.</p></details>
+   <details><summary>آیا ثبت‌نام و سفارش‌های من در همه دستگاه‌ها همگام است؟</summary><p>بله؛ با اتصال امن به دیتابیس آنلاین، حساب کاربری، سفارش‌ها و پاسخ‌های مدیریت روی سرور ذخیره می‌شوند.</p></details>
+   <details><summary>پیگیری سفارش‌ها چگونه انجام می‌شود؟</summary><p>پس از ثبت سفارش در بخش خدمات یا ارسال تیکت، وضعیت و پاسخ مدیریت به‌صورت زنده در صفحه پروفایل شما قابل مشاهده است.</p></details>
+  </div>
+ </section>
+
+ <div class="site-foot">ArnØ Agency · Pure Design, Premium Marketing</div>
+</main>
+
+<nav class="bottom-nav" id="bottomNav" aria-label="ناوبری موبایل">
+ <button class="nav-btn" type="button" data-action="navigate" data-page-target="home" aria-current="page">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 11 9-8 9 8v9h-6v-6H9v6H3z"/></svg><span>آغاز</span>
+ </button>
+ <button class="nav-btn" type="button" data-action="navigate" data-page-target="services">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>خدمات</span>
+ </button>
+ <button class="nav-btn" type="button" data-action="navigate" data-page-target="contact">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v12H8l-4 3z"/><path d="M8 9h8M8 13h5"/></svg><span>ارتباط</span>
+ </button>
+ <button class="nav-btn" type="button" data-action="navigate" data-page-target="profile">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>پروفایل</span>
+ </button>
+</nav>
+
+<aside class="drawer" id="drawer" hidden>
+ <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--line)">
+  <span class="arno-wordmark" style="font-size:22px">Arn<span class="slash-o">Ø</span></span>
+  <button class="icon-btn" type="button" data-action="close-menu" aria-label="بستن منو">×</button>
+ </div>
+ <div style="display:grid;gap:10px;margin-top:18px">
+  <button class="button install-btn" type="button" data-action="install-app">نصب اپلیکیشن روی دستگاه</button>
+  <button class="button soft" type="button" data-action="navigate" data-page-target="home">صفحه آغاز</button>
+  <button class="button soft" type="button" data-action="navigate" data-page-target="services">خدمات و سفارش</button>
+  <button class="button soft" type="button" data-action="navigate" data-page-target="contact">ارتباط با ما و تیکت</button>
+  <button class="button soft" type="button" data-action="navigate" data-page-target="reviews">دیدگاه کاربران</button>
+  <button class="button soft" type="button" data-action="navigate" data-page-target="faq">پرسش‌های رایج</button>
+  <button class="button soft" type="button" data-action="navigate" data-page-target="profile">پروفایل کاربری</button>
+ </div>
+</aside>
+<div class="menu-shade" id="menuShade" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+ /* ====== تنظیمات اتصال به Supabase (بدون وجود هیچ رمز یا اعتبارنامه ادمین در فرانت‌اند) ====== */
+ const SUPABASE_URL = 'https://gcdvymptodgpxmqjcytv.supabase.co';
+ const SUPABASE_ANON_KEY = 'sb_publishable_7PbWWZIbOTWu2MuJTnFUzw_zfULiiun';
+
+ const $=s=>document.querySelector(s);
+ const $$=s=>Array.from(document.querySelectorAll(s));
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const norm=v=>String(v||'').trim().toLocaleLowerCase();
+
+ const hasCloud = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20 && window.supabase;
+ const db = hasCloud ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+ let state = {
+  user: null,
+  myTickets: [],
+  approvedReviews: [],
+  content: {},
+  adminData: { profiles: [], tickets: [], reviews: [] }
+ };
+
+ // اعتبارنامه ادمین فقط در حافظه موقت نشست (RAM) نگهداری می‌شود و هرگز در localStorage یا سورس ذخیره نمی‌شود
+ let adminSession = null;
+ let currentPage = 'auth', gateMode = 'login', adminTab = 'tickets';
+ let selectedServices = new Set(), deferredPrompt = null, toastTimer = null;
+
+ /* ثبت Service Worker برای نصب PWA */
+ if('serviceWorker' in navigator && location.protocol !== 'file:'){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+ }
+ window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  toast('اپلیکیشن ArnØ آماده نصب روی دستگاه شماست.');
+ });
+
+ async function installApp(){
+  if(window.matchMedia('(display-mode: standalone)').matches || navigator.standalone){
+   toast('اپلیکیشن هم‌اکنون نصب شده است.'); return;
+  }
+  if(deferredPrompt){
+   deferredPrompt.prompt();
+   const res = await deferredPrompt.userChoice.catch(()=>({outcome:'dismissed'}));
+   deferredPrompt = null;
+   if(res.outcome==='accepted') toast('نصب اپلیکیشن انجام شد.');
+   return;
+  }
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
+   toast('در سافاری روی دکمه Share بزنید و Add to Home Screen را انتخاب کنید.');
+  }else{
+   toast('از منوی مرورگر (⋮) گزینه «Install app» یا «Add to Home screen» را بزنید.');
+  }
+ }
+
+ function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+ }
+ function setStatus(id,msg,err){
+  const el=$('#'+id); if(!el)return;
+  el.textContent=msg||''; el.classList.toggle('error',!!err); el.classList.toggle('success',!!msg&&!err);
+ }
+
+ async function sha256(str){
+  const bytes = new TextEncoder().encode(str);
+  if(crypto && crypto.subtle){
+   const digest = await crypto.subtle.digest('SHA-256', bytes);
+   return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  return btoa(unescape(encodeURIComponent(str)));
+ }
+
+ function getSavedSession(){
+  try{
+   const raw = localStorage.getItem('arno_user_session_v3');
+   return raw ? JSON.parse(raw) : null;
+  }catch(_){ return null; }
+ }
+ function setSavedSession(uid, passHash){
+  try{
+   if(uid && passHash) localStorage.setItem('arno_user_session_v3', JSON.stringify({ uid, passHash }));
+   else localStorage.removeItem('arno_user_session_v3');
+  }catch(_){}
+ }
+
+ async function loadPublicData(){
+  const badge=$('#syncBadge'), txt=$('#syncText');
+  if(!db){
+   badge.classList.add('offline'); txt.textContent='عدم اتصال';
+   return;
+  }
+  try{
+   const [cRes, rRes] = await Promise.all([
+    db.from('arno_content').select('*'),
+    db.rpc('arno_get_public_reviews')
+   ]);
+   if(cRes.error) throw cRes.error;
+   const cmap = {};
+   (cRes.data || []).forEach(row => { cmap[row.key] = row.value; });
+   state.content = cmap;
+   state.approvedReviews = rRes.data || [];
+   badge.classList.remove('offline'); txt.textContent='آنلاین · ایمن';
+  }catch(_){
+   badge.classList.add('offline'); txt.textContent='آفلاین';
+  }
+ }
+
+ async function restoreUserSession(){
+  const saved = getSavedSession();
+  if(!db || !saved || !saved.uid || !saved.passHash) return false;
+  try{
+   const { data, error } = await db.rpc('arno_get_user_session', {
+    p_user_id: saved.uid,
+    p_password_hash: saved.passHash
+   });
+   if(error || !data || !data.profile){
+    setSavedSession(null, null);
+    return false;
+   }
+   state.user = { ...data.profile, passHash: saved.passHash };
+   state.myTickets = data.tickets || [];
+   return true;
+  }catch(_){
+   return false;
+  }
+ }
+
+ async function loadAdminDashboard(){
+  if(!db || !adminSession) return false;
+  const { data, error } = await db.rpc('arno_admin_dashboard', {
+   p_admin_user: adminSession.user,
+   p_admin_pass: adminSession.pass
+  });
+  if(error || !data) throw error || new Error('خطا در دریافت اطلاعات مدیریت');
+  state.adminData = {
+   profiles: data.profiles || [],
+   tickets: data.tickets || [],
+   reviews: data.reviews || []
+  };
+  const cmap = {};
+  (data.content || []).forEach(row => { cmap[row.key] = row.value; });
+  state.content = { ...state.content, ...cmap };
+  return true;
+ }
+
+ function render(){
+  const user = state.user;
+  $('#profileName').textContent = user ? user.name : 'مهمان';
+  $('#profileSummary').textContent = user ? (user.email || user.username) : 'وارد نشده';
+  $('#signedInArea').hidden = !user;
+  $('#avatarLetter').textContent = user ? (user.name.trim()[0] || 'آ') : 'آ';
+
+  const img=$('#avatarImage'), letEl=$('#avatarLetter');
+  if(user && user.avatar_data_url){ img.src=user.avatar_data_url; img.hidden=false; letEl.hidden=true; }
+  else { img.hidden=true; letEl.hidden=false; }
+
+  if(user){
+   if(document.activeElement!==$('#editName')) $('#editName').value=user.name||'';
+   if(document.activeElement!==$('#editEmail')) $('#editEmail').value=user.email||'';
+   if(document.activeElement!==$('#editPhone')) $('#editPhone').value=user.phone||'';
+  }
+
+  const mine = state.myTickets || [];
+  $('#myTickets').innerHTML = mine.length ? mine.map(t => `
+   <article class="record">
+    <span class="badge-pill ${t.status==='answered'?'answered':'open'}">${t.status==='answered'?'پاسخ داده شده':'در انتظار بررسی'}</span>
+    <h3>${esc(t.title)}</h3>
+    <p>${esc(t.body)}</p>
+    <small>${t.status==='answered' ? 'پاسخ مدیریت: '+esc(t.reply) : 'تیکت شما در صف بررسی تیم آرنو قرار دارد.'}</small>
+    <div class="record-actions"><button class="button danger small" data-action="del-ticket" data-id="${esc(t.id)}">حذف</button></div>
+   </article>`).join('') : '<p class="field-note">هنوز درخواستی ثبت نکرده‌اید.</p>';
+
+  if(state.content.hero){
+   $('#heroCopy').textContent = state.content.hero;
+   if(document.activeElement!==$('#editHeroCopy')) $('#editHeroCopy').value = state.content.hero;
+  }
+  if(state.content.services){
+   $('#servicesIntro').textContent = state.content.services;
+   if(document.activeElement!==$('#editServicesIntro')) $('#editServicesIntro').value = state.content.services;
+  }
+  if(state.content.contact){
+   $('#contactIntro').textContent = state.content.contact;
+   if(document.activeElement!==$('#editContactIntro')) $('#editContactIntro').value = state.content.contact;
+  }
+
+  // Admin panel rendering
+  const admTickets = state.adminData.tickets || [];
+  const admProfiles = state.adminData.profiles || [];
+  const admReviews = state.adminData.reviews || [];
+
+  $('#statTickets').textContent = admTickets.length.toLocaleString('fa-IR');
+  $('#statOpen').textContent = admTickets.filter(t=>t.status==='open').length.toLocaleString('fa-IR');
+  $('#statReviews').textContent = admReviews.filter(r=>!r.approved).length.toLocaleString('fa-IR');
+  $('#statProfiles').textContent = admProfiles.length.toLocaleString('fa-IR');
+
+  $('#adminTickets').innerHTML = admTickets.length ? admTickets.map(t => {
+   const owner = admProfiles.find(p => p.id === t.user_id);
+   return `<article class="record">
+    <span class="badge-pill ${t.status==='answered'?'answered':'open'}">${t.status==='answered'?'پاسخ داده شده':'باز'}</span>
+    <h3>${esc(t.title)}</h3>
+    <small>کاربر: ${esc(owner ? owner.name + (owner.phone ? ' ('+owner.phone+')' : '') : 'ناشناس')}</small>
+    <p>${esc(t.body)}</p>
+    <label class="field-label">پاسخ مدیر</label>
+    <textarea data-reply="${esc(t.id)}" placeholder="متن پاسخ را بنویسید…">${esc(t.reply||'')}</textarea>
+    <div class="record-actions">
+     <button class="button primary small" data-action="reply-ticket" data-id="${esc(t.id)}">ثبت پاسخ</button>
+     <button class="button danger small" data-action="admin-del-ticket" data-id="${esc(t.id)}">حذف</button>
+    </div>
+   </article>`;
+  }).join('') : '<p class="field-note">تیکتی ثبت نشده است.</p>';
+
+  $('#adminProfiles').innerHTML = admProfiles.length ? admProfiles.map(p => `
+   <article class="record">
+    <h3>${esc(p.name)}</h3>
+    <small>نام کاربری: ${esc(p.username)} · ایمیل: ${esc(p.email)} · تماس: ${esc(p.phone||'—')}</small>
+    <div class="record-actions"><button class="button danger small" data-action="del-user" data-id="${esc(p.id)}">حذف کاربر</button></div>
+   </article>`).join('') : '<p class="field-note">کاربری ثبت نشده است.</p>';
+
+  const pendingRev = admReviews.filter(r => !r.approved);
+  $('#adminReviews').innerHTML = pendingRev.length ? pendingRev.map(r => `
+   <article class="record">
+    <p>${esc(r.text)}</p>
+    <div class="record-actions">
+     <button class="button primary small" data-action="approve-rev" data-id="${esc(r.id)}">تأیید و انتشار</button>
+     <button class="button danger small" data-action="del-rev" data-id="${esc(r.id)}">حذف</button>
+    </div>
+   </article>`).join('') : '<p class="field-note">دیدگاهی در انتظار تأیید نیست.</p>';
+
+  const approvedRev = state.approvedReviews || [];
+  $('#approvedReviews').innerHTML = approvedRev.length ? approvedRev.map(r => `
+   <article class="record"><p>«${esc(r.text)}»</p><small>${esc(r.author_name || 'همراه آرنو')}</small></article>`
+  ).join('') : '<p class="field-note">هنوز دیدگاهی منتشر نشده است.</p>';
+ }
+
+ function showPage(name){
+  if(name==='admin' && !adminSession) name='auth';
+  if(!adminSession && !state.user && name!=='auth') name='auth';
+  currentPage = name;
+  $$('[data-page]').forEach(p => p.hidden = p.dataset.page !== name);
+  const hideNav = (name==='auth' || name==='admin');
+  $('#bottomNav').hidden = hideNav;
+  $('#desktopNav').style.visibility = hideNav ? 'hidden' : 'visible';
+  $$('[data-page-target]').forEach(b => {
+   if(b.dataset.pageTarget===name) b.setAttribute('aria-current','page');
+   else b.removeAttribute('aria-current');
+  });
+  $('#drawer').hidden = true; $('#menuShade').hidden = true;
+  window.scrollTo(0,0);
+ }
+
+ $('#gateRegisterForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if(!db){ setStatus('gateStatus','اتصال به دیتابیس برقرار نیست.',true); return; }
+  const name=$('#gateRegName').value.trim(), username=$('#gateRegUser').value.trim();
+  const email=$('#gateRegEmail').value.trim(), pass=$('#gateRegPass').value, phone=$('#gateRegPhone').value.trim();
+  if(!name || username.length<3 || !email.includes('@') || pass.length<6){
+   setStatus('gateStatus','لطفاً همه فیلدها را به‌درستی پر کنید (رمز حداقل ۶ کاراکتر).',true); return;
+  }
+
+  const btn=$('#regSubmitBtn'); btn.disabled=true;
+  setStatus('gateStatus','در حال ایجاد حساب امن…',false);
+  try{
+   const password_hash = await sha256(pass);
+   const { data, error } = await db.rpc('arno_register_user', {
+    p_name: name,
+    p_username: username,
+    p_email: email,
+    p_phone: phone,
+    p_password_hash: password_hash
+   });
+   if(error) throw error;
+   state.user = { ...data, passHash: password_hash };
+   state.myTickets = [];
+   setSavedSession(data.id, password_hash);
+   render();
+   e.target.reset();
+   setStatus('gateStatus','',false);
+   toast('ثبت‌نام با موفقیت انجام شد!');
+   showPage('home');
+  }catch(err){
+   setStatus('gateStatus', err.message || 'خطا در ثبت‌نام.', true);
+  }
+  btn.disabled=false;
+ });
+
+ $('#gateLoginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if(!db){ setStatus('gateStatus','اتصال به دیتابیس برقرار نیست.',true); return; }
+  const u=$('#gateLoginUser').value.trim(), p=$('#gateLoginPass').value;
+  if(!u || !p){ setStatus('gateStatus','نام کاربری و رمز عبور را وارد کنید.',true); return; }
+
+  const btn=$('#loginSubmitBtn'); btn.disabled=true;
+  setStatus('gateStatus','در حال بررسی اعتبار…',false);
+
+  try{
+   // ۱. ابتدا تلاش برای ورود به عنوان کاربر عادی
+   const hash = await sha256(p);
+   const { data: userData, error: userErr } = await db.rpc('arno_login_user', {
+    p_identifier: u,
+    p_password_hash: hash
+   });
+
+   if(!userErr && userData && userData.profile){
+    state.user = { ...userData.profile, passHash: hash };
+    state.myTickets = userData.tickets || [];
+    setSavedSession(userData.profile.id, hash);
+    render();
+    e.target.reset();
+    setStatus('gateStatus','',false);
+    toast('با موفقیت وارد شدید.');
+    showPage('home');
+    btn.disabled=false;
+    return;
+   }
+
+   // ۲. بررسی ورود مدیریت مستقیماً در سرور Supabase (بدون هیچ رمز یا نام کاربری در کد کلاینت)
+   adminSession = { user: u, pass: p };
+   await loadAdminDashboard();
+   render();
+   e.target.reset();
+   setStatus('gateStatus','',false);
+   showPage('admin');
+   toast('خوش آمدید مدیر آرنو');
+  }catch(_){
+   adminSession = null;
+   setStatus('gateStatus','نام کاربری یا رمز عبور اشتباه است.',true);
+  }
+  btn.disabled=false;
+ });
+
+ $('#orderForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const user=state.user; if(!user || !db) return;
+  if(!selectedServices.size){ setStatus('orderStatus','حداقل یک خدمت انتخاب کنید.',true); return; }
+  const title=$('#orderTitle').value.trim(), body=$('#orderBody').value.trim();
+  if(!title || !body){ setStatus('orderStatus','موضوع و توضیحات را کامل کنید.',true); return; }
+  const fullBody = 'خدمات انتخاب‌شده: ' + Array.from(selectedServices).join('، ') + '\n\n' + body;
+
+  const btn=$('#orderSubmitBtn'); btn.disabled=true;
+  try{
+   const { data, error } = await db.rpc('arno_create_ticket', {
+    p_user_id: user.id,
+    p_password_hash: user.passHash,
+    p_title: title,
+    p_body: fullBody
+   });
+   if(error) throw error;
+   if(data) state.myTickets.unshift(data);
+   render();
+   e.target.reset(); selectedServices.clear();
+   $$('[data-action="select-service"]').forEach(b=>{b.textContent='انتخاب خدمت';b.closest('.service-card').classList.remove('selected')});
+   $('#selectedServices').textContent='هنوز خدمتی انتخاب نشده است.';
+   setStatus('orderStatus','سفارش ثبت شد و در پنل مدیریت قرار گرفت.',false);
+   toast('سفارش ثبت شد.');
+  }catch(err){
+   setStatus('orderStatus', err.message || 'خطا در ثبت سفارش.', true);
+  }
+  btn.disabled=false;
+ });
+
+ $('#contactTicket').addEventListener('submit', async e => {
+  e.preventDefault();
+  const user=state.user; if(!user || !db) return;
+  const title=$('#contactTicketTitle').value.trim(), body=$('#contactTicketBody').value.trim();
+  if(!title || !body){ setStatus('contactTicketStatus','فیلدها را پر کنید.',true); return; }
+  const btn=$('#ticketSubmitBtn'); btn.disabled=true;
+  try{
+   const { data, error } = await db.rpc('arno_create_ticket', {
+    p_user_id: user.id,
+    p_password_hash: user.passHash,
+    p_title: title,
+    p_body: body
+   });
+   if(error) throw error;
+   if(data) state.myTickets.unshift(data);
+   render(); e.target.reset(); $('#contactTicketForm').hidden=true;
+   setStatus('contactTicketStatus','',false);
+   toast('تیکت ارسال شد.');
+  }catch(err){
+   setStatus('contactTicketStatus', err.message || 'خطا در ارسال تیکت.', true);
+  }
+  btn.disabled=false;
+ });
+
+ $('#profileEditForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const user=state.user; if(!user || !db) return;
+  const name=$('#editName').value.trim(), email=$('#editEmail').value.trim(), phone=$('#editPhone').value.trim();
+  if(!name) return;
+  try{
+   const { data, error } = await db.rpc('arno_update_profile', {
+    p_user_id: user.id,
+    p_password_hash: user.passHash,
+    p_name: name,
+    p_email: email,
+    p_phone: phone
+   });
+   if(error) throw error;
+   state.user = { ...state.user, ...data };
+   render(); toast('پروفایل با موفقیت ذخیره شد.');
+  }catch(err){
+   toast(err.message || 'خطا در ذخیره پروفایل.');
+  }
+ });
+
+ $('#avatarFileInput').addEventListener('change', e => {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+   const img = new Image();
+   img.onload = async () => {
+    const c=document.createElement('canvas'), s=Math.min(1,220/Math.max(img.width,img.height));
+    c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    const url=c.toDataURL('image/jpeg',0.8);
+    const user=state.user; if(!user || !db) return;
+    try{
+     const { error } = await db.rpc('arno_update_profile', {
+      p_user_id: user.id,
+      p_password_hash: user.passHash,
+      p_avatar: url
+     });
+     if(error) throw error;
+     user.avatar_data_url=url; render(); toast('آواتار به‌روز شد.');
+    }catch(_){
+     toast('خطا در ذخیره تصویر آواتار.');
+    }
+   };
+   img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
+
+ $('#reviewForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const user=state.user, text=$('#reviewText').value.trim();
+  if(!user || !text || !db) return;
+  try{
+   const { error } = await db.rpc('arno_submit_review', {
+    p_user_id: user.id,
+    p_password_hash: user.passHash,
+    p_text: text
+   });
+   if(error) throw error;
+   e.target.reset(); toast('دیدگاه شما برای بررسی مدیریت ارسال شد.');
+  }catch(err){
+   toast(err.message || 'خطا در ارسال دیدگاه.');
+  }
+ });
+
+ $('#contentForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if(!adminSession || !db) return;
+  const hero=$('#editHeroCopy').value.trim(), services=$('#editServicesIntro').value.trim(), contact=$('#editContactIntro').value.trim();
+  try{
+   const { error } = await db.rpc('arno_admin_update_content', {
+    p_admin_user: adminSession.user,
+    p_admin_pass: adminSession.pass,
+    p_hero: hero,
+    p_services: services,
+    p_contact: contact
+   });
+   if(error) throw error;
+   if(hero) state.content.hero = hero;
+   if(services) state.content.services = services;
+   if(contact) state.content.contact = contact;
+   render(); toast('متون سایت با موفقیت ذخیره شد.');
+  }catch(err){
+   toast(err.message || 'خطا در ذخیره متون.');
+  }
+ });
+
+ document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-action]'); if(!btn) return;
+  const act = btn.dataset.action;
+
+  if(act==='install-app') installApp();
+  else if(act==='navigate') showPage(btn.dataset.pageTarget);
+  else if(act==='go-home'){ e.preventDefault(); showPage('home'); }
+  else if(act==='go-services') showPage('services');
+  else if(act==='go-contact') showPage('contact');
+  else if(act==='menu'){ $('#drawer').hidden=false; $('#menuShade').hidden=false; }
+  else if(act==='close-menu'){ $('#drawer').hidden=true; $('#menuShade').hidden=true; }
+  else if(act==='gate-mode'){
+   gateMode = btn.dataset.mode;
+   $('#gateLoginForm').hidden = gateMode!=='login';
+   $('#gateRegisterForm').hidden = gateMode!=='register';
+   setStatus('gateStatus','',false);
+  }
+  else if(act==='select-service'){
+   const srv = btn.dataset.service;
+   if(selectedServices.has(srv)) selectedServices.delete(srv); else selectedServices.add(srv);
+   const on = selectedServices.has(srv);
+   btn.textContent = on ? 'انتخاب شد ✓' : 'انتخاب خدمت';
+   btn.closest('.service-card').classList.toggle('selected', on);
+   $('#selectedServices').textContent = selectedServices.size ? 'خدمات انتخاب‌شده: '+Array.from(selectedServices).join('، ') : 'هنوز خدمتی انتخاب نشده است.';
+  }
+  else if(act==='ticket-contact') $('#contactTicketForm').hidden=false;
+  else if(act==='cancel-ticket') $('#contactTicketForm').hidden=true;
+  else if(act==='avatar') $('#avatarFileInput').click();
+  else if(act==='logout'){
+   state.user=null; state.myTickets=[]; setSavedSession(null,null); showPage('auth');
+  }
+  else if(act==='delete-account'){
+   const user=state.user; if(!user || !db || !confirm('آیا از حذف کامل حساب کاربری خود مطمئن هستید؟')) return;
+   await db.rpc('arno_delete_self', { p_user_id: user.id, p_password_hash: user.passHash });
+   state.user=null; state.myTickets=[]; setSavedSession(null,null); showPage('auth');
+   toast('حساب کاربری حذف شد.');
+  }
+  else if(act==='del-ticket'){
+   const id=btn.dataset.id, user=state.user; if(!user || !db) return;
+   await db.rpc('arno_delete_own_ticket', { p_user_id: user.id, p_password_hash: user.passHash, p_ticket_id: id });
+   state.myTickets=state.myTickets.filter(x=>x.id!==id); render(); toast('درخواست حذف شد.');
+  }
+  else if(act==='refresh-admin'){
+   if(!adminSession) return;
+   try{ await loadAdminDashboard(); render(); toast('اطلاعات مدیریت به‌روز شد.'); }catch(_){ toast('خطا در به‌روزرسانی.'); }
+  }
+  else if(act==='admin-logout'){
+   adminSession=null; state.adminData={profiles:[],tickets:[],reviews:[]}; showPage('auth');
+  }
+  else if(act==='admin-tab'){
+   adminTab=btn.dataset.tab;
+   $$('[data-action="admin-tab"]').forEach(b=>b.classList.toggle('active',b.dataset.tab===adminTab));
+   $$('[data-admin-panel]').forEach(p=>p.hidden=p.dataset.adminPanel!==adminTab);
+  }
+  else if(act==='reply-ticket'){
+   if(!adminSession || !db) return;
+   const id=btn.dataset.id, reply=$(`[data-reply="${id}"]`).value.trim();
+   await db.rpc('arno_admin_reply_ticket', {
+    p_admin_user: adminSession.user, p_admin_pass: adminSession.pass, p_ticket_id: id, p_reply: reply
+   });
+   const t=state.adminData.tickets.find(x=>x.id===id); if(t){ t.reply=reply; t.status='answered'; }
+   render(); toast('پاسخ ثبت شد.');
+  }
+  else if(act==='admin-del-ticket'){
+   if(!adminSession || !db) return;
+   const id=btn.dataset.id;
+   await db.rpc('arno_admin_delete_ticket', {
+    p_admin_user: adminSession.user, p_admin_pass: adminSession.pass, p_ticket_id: id
+   });
+   state.adminData.tickets=state.adminData.tickets.filter(x=>x.id!==id); render(); toast('تیکت حذف شد.');
+  }
+  else if(act==='del-user'){
+   if(!adminSession || !db) return;
+   const id=btn.dataset.id; if(!confirm('کاربر و تمام سوابق او حذف شود؟')) return;
+   await db.rpc('arno_admin_delete_user', {
+    p_admin_user: adminSession.user, p_admin_pass: adminSession.pass, p_target_user_id: id
+   });
+   state.adminData.profiles=state.adminData.profiles.filter(x=>x.id!==id);
+   state.adminData.tickets=state.adminData.tickets.filter(x=>x.user_id!==id);
+   render(); toast('کاربر حذف شد.');
+  }
+  else if(act==='approve-rev'){
+   if(!adminSession || !db) return;
+   const id=btn.dataset.id;
+   await db.rpc('arno_admin_moderate_review', {
+    p_admin_user: adminSession.user, p_admin_pass: adminSession.pass, p_review_id: id, p_approve: true
+   });
+   const r=state.adminData.reviews.find(x=>x.id===id); if(r) r.approved=true;
+   await loadPublicData(); render(); toast('دیدگاه تأیید و منتشر شد.');
+  }
+  else if(act==='del-rev'){
+   if(!adminSession || !db) return;
+   const id=btn.dataset.id;
+   await db.rpc('arno_admin_moderate_review', {
+    p_admin_user: adminSession.user, p_admin_pass: adminSession.pass, p_review_id: id, p_approve: false
+   });
+   state.adminData.reviews=state.adminData.reviews.filter(x=>x.id!==id); render(); toast('دیدگاه حذف شد.');
+  }
+  else if(act==='dial') location.href='tel:'+btn.dataset.value;
+  else if(act==='email') location.href='mailto:'+btn.dataset.value;
+  else if(act==='whatsapp') window.open('https://wa.me/98'+btn.dataset.value.replace(/^0/,''),'_blank','noopener');
+ });
+
+ $('#menuShade').addEventListener('click', ()=>{ $('#drawer').hidden=true; $('#menuShade').hidden=true; });
+
+ const baStage=$('#baStage'), baRange=$('#baRange');
+ function updateBa(v){
+  const n=Math.max(5,Math.min(95,Number(v)||50));
+  $('#baAfterLayer').style.clipPath=`inset(0 0 0 ${n}%)`;
+  $('#baDivider').style.left=n+'%'; $('#baHandle').style.left=n+'%'; baRange.value=n;
+ }
+ baRange.addEventListener('input', e=>updateBa(e.target.value));
+ let drag=false;
+ baStage.addEventListener('pointerdown', e=>{ drag=true; baStage.setPointerCapture(e.pointerId); updateBa(((e.clientX-baStage.getBoundingClientRect().left)/baStage.offsetWidth)*100); });
+ baStage.addEventListener('pointermove', e=>{ if(drag) updateBa(((e.clientX-baStage.getBoundingClientRect().left)/baStage.offsetWidth)*100); });
+ baStage.addEventListener('pointerup', ()=>drag=false);
+
+ (async function init(){
+  await loadPublicData();
+  const restored = await restoreUserSession();
+  render();
+  if(restored) showPage('home');
+  else showPage('auth');
+ })();
+})();
+</script>
+</body>
+</html>
